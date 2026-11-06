@@ -1,7 +1,8 @@
 from datetime import date, datetime
 
-from pydantic import BaseModel, ConfigDict, EmailStr
+from pydantic import BaseModel, ConfigDict, EmailStr, field_validator
 from app.models import Stage
+
 
 class ApplicationCreate(BaseModel):
     company: str
@@ -39,3 +40,10 @@ class ApplicationUpdate(BaseModel):
     contact_name: str | None = None
     contact_email: EmailStr | None = None
     follow_up_date: date | None = None
+
+    @field_validator("company", "role", "stage")
+    @classmethod
+    def not_null(cls, v):
+        if v is None:
+            raise ValueError("cannot be null")
+        return v
